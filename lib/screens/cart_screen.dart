@@ -44,6 +44,13 @@ class CartScreen extends StatelessWidget {
                 ],
               ),
             ),
+          ),
+          const SizedBox(height: 10,),
+          Expanded(
+            child: ListView.builder(
+              itemBuilder: ,
+              itemCount: cart.itemCount,
+              ),
           )
         ],
       ),
