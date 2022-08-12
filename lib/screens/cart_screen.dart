@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/cart.dart';
+
+import '../providers/cart.dart' show Cart;
+
+import '../widgets/cart_item.dart';
 
 class CartScreen extends StatelessWidget {
   static const routeName = "/cart";
@@ -29,7 +32,7 @@ class CartScreen extends StatelessWidget {
                       fontSize: 20.0,
                     ),
                   ),
-                  Spacer(),
+                  const Spacer(),
                   Chip(
                     label: Text(
                       "\$${cart.totalAmount}",
@@ -45,12 +48,21 @@ class CartScreen extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 10,),
+          const SizedBox(
+            height: 10,
+          ),
           Expanded(
             child: ListView.builder(
-              itemBuilder: ,
-              itemCount: cart.itemCount,
-              ),
+                itemBuilder: (cntext, index) {
+                  return CartItem(
+                    id: cart.items.values.toList()[index].id,
+                    productID: cart.items.keys.toList()[index],
+                    title: cart.items.values.toList()[index].title,
+                    price: cart.items.values.toList()[index].price,
+                    quantity: cart.items.values.toList()[index].quantity,
+                  );
+                },
+                itemCount: cart.itemCount),
           )
         ],
       ),
