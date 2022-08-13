@@ -46,6 +46,11 @@ class Cart with ChangeNotifier {
     notifyListeners();
   }
 
+  void clearCard() {
+    _items = {};
+    notifyListeners();
+  }
+
   double get totalAmount {
     double total = 0.0;
     _items.forEach((key, value) {
