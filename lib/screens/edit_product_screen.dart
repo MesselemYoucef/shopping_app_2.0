@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
+import 'package:provider/provider.dart';
+
 import '../providers/product.dart';
+import '../providers/products_provider.dart';
 
 class EditProductScreen extends StatefulWidget {
   static const routeName = "/edit-product";
@@ -27,16 +30,27 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
   void _updateImageUrl() {
     if (!_imageUrlFocusNode.hasFocus) {
+      if ((_imageUrlController.text.isEmpty) ||
+          (!_imageUrlController.text.startsWith('http') &&
+              !_imageUrlController.text.startsWith('https')) ||
+          (!_imageUrlController.text.endsWith('.png') &&
+              !_imageUrlController.text.endsWith('.jpg') &&
+              !_imageUrlController.text.endsWith('.jpeg'))) {
+        return;
+      }
       setState(() {});
     }
   }
 
   void _saveForm() {
+    final _isValide = _form.currentState!.validate();
+    if (!_isValide) {
+      return;
+    }
     _form.currentState!.save();
-    print(_editedProduct.title);
-    print(_editedProduct.price);
-    print(_editedProduct.description);
-    print(_editedProduct.imageUrl);
+    Provider.of<ProductsProvider>(context, listen: false)
+        .addProduct(_editedProduct);
+    Navigator.of(context).pushReplacementNamed('/');
   }
 
   @override
@@ -70,6 +84,12 @@ class _EditProductScreenState extends State<EditProductScreen> {
               children: [
                 TextFormField(
                   decoration: const InputDecoration(labelText: 'Title'),
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Empty Field';
+                    }
+                    return null;
+                  },
                   textInputAction: TextInputAction.next,
                   onFieldSubmitted: (_) {
                     FocusScope.of(context).requestFocus(_priceFocusNode);
@@ -85,6 +105,18 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 ),
                 TextFormField(
                   decoration: const InputDecoration(labelText: 'Price'),
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Please enter the price.';
+                    }
+                    if (double.tryParse(value) == null) {
+                      return 'Please enter a number';
+                    }
+                    if (double.parse(value) < 0) {
+                      return 'Please enter a positive number';
+                    }
+                    return null;
+                  },
                   textInputAction: TextInputAction.next,
                   keyboardType: TextInputType.number,
                   focusNode: _priceFocusNode,
@@ -102,6 +134,15 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 ),
                 TextFormField(
                   decoration: const InputDecoration(labelText: 'Description'),
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Please enter a description';
+                    }
+                    if (value.length < 10) {
+                      return 'Should be at least 10 characters long';
+                    }
+                    return null;
+                  },
                   maxLines: 3,
                   keyboardType: TextInputType.multiline,
                   focusNode: _descriptionFocusNode,
@@ -153,6 +194,21 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       child: TextFormField(
                         decoration:
                             const InputDecoration(labelText: 'Image URL'),
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Please enter an image url';
+                          }
+                          if (!value.startsWith('http') &&
+                              !value.startsWith('https')) {
+                            return 'Please enter a valid url starts with (http) or (https)';
+                          }
+                          if (!value.endsWith('.png') &&
+                              !value.endsWith('.jpg') &&
+                              !value.endsWith('.jpeg')) {
+                            return 'Please enter a valid image Url';
+                          }
+                          return null;
+                        },
                         keyboardType: TextInputType.url,
                         textInputAction: TextInputAction.done,
                         controller: _imageUrlController,
