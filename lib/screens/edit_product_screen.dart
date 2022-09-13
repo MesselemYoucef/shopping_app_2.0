@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
-import 'package:loading_indicator/loading_indicator.dart';
 
 import '../providers/product.dart';
 import '../providers/products_provider.dart';
@@ -96,7 +95,24 @@ class _EditProductScreenState extends State<EditProductScreen> {
     } else {
       Provider.of<ProductsProvider>(context, listen: false)
           .addProduct(_editedProduct)
-          .then((_) {
+          .catchError((error) {
+        return showDialog<Null>(
+            context: context,
+            builder: (ctx) {
+              return AlertDialog(
+                title: const Text("An Error Accured"),
+                content: const Text("Something went wrong!"),
+                actions: [
+                  TextButton(
+                    child: const Text("Okay!!!"),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  )
+                ],
+              );
+            });
+      }).then((_) {
         setState(() {
           _isLoading = false;
         });
