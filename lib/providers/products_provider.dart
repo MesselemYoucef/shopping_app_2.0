@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import './product.dart';
+import '../models/http_exception.dart';
 
 class ProductsProvider with ChangeNotifier {
   List<Product> _items = [
@@ -61,7 +62,7 @@ class ProductsProvider with ChangeNotifier {
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
       final List<Product> loadedProducts = [];
-      extractedData.forEach((prodId, prodData) { 
+      extractedData.forEach((prodId, prodData) {
         loadedProducts.add(Product(
           id: prodId,
           title: prodData['title'],
@@ -70,9 +71,9 @@ class ProductsProvider with ChangeNotifier {
           description: prodData['description'],
           isFavorite: prodData['isFavorite'],
         ));
-       });
-       _items = loadedProducts;
-       notifyListeners();
+      });
+      _items = loadedProducts;
+      notifyListeners();
     } catch (error) {
       throw (error);
     }
@@ -107,23 +108,46 @@ class ProductsProvider with ChangeNotifier {
     }
   }
 
-  void updateProduct(String productId, Product newProduct) {
+  Future<void> updateProduct(String productId, Product newProduct) async {
     final productIndex =
         _items.indexWhere((element) => element.id == productId);
     if (productIndex >= 0) {
+      final url = Uri.https(
+          'flutter-project-testing-8debf-default-rtdb.firebaseio.com',
+          'products/$productId.json');
+
+      await http.patch(url,
+          body: json.encode({
+            'title': newProduct.title,
+            'price': newProduct.price,
+            'imageUrl': newProduct.imageUrl,
+            'description': newProduct.description,
+          }));
       _items[productIndex] = newProduct;
       notifyListeners();
+    } else {
+      print("Updating problem");
     }
   }
 
-  void deleteProduct(String productId) {
+  Future <void> deleteProduct (String productId) async {
     final productIndex =
         _items.indexWhere((element) => element.id == productId);
-    if (productIndex >= 0) {
-      _items.removeAt(productIndex);
-    } else {
-      print("No id has been found");
-    }
-    notifyListeners();
+
+    final url = Uri.https(
+        'flutter-project-testing-8debf-default-rtdb.firebaseio.com',
+        'products/$productId.json');
+    final existingProductIndex =
+        _items.indexWhere((element) => element.id == productId);
+    Product? existingProduct = _items[existingProductIndex];
+      _items.removeAt(existingProductIndex);
+      notifyListeners();
+    final response = await http.delete(url);
+      if(response.statusCode > 400){
+      _items.insert(existingProductIndex, existingProduct);
+      notifyListeners();
+       throw HttpException("Could not delete the product!");
+      }
+      existingProduct = null;
   }
 }
