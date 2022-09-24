@@ -25,8 +25,8 @@ class ProductItem extends StatelessWidget {
                   ? Theme.of(context).colorScheme.secondary
                   : Colors.white,
               icon: const Icon(Icons.favorite),
-              onPressed: () {
-                product.toggleFavoriteStatue();
+              onPressed: () async {
+                await product.toggleFavoriteStatue();
               },
             ),
           ),

@@ -91,7 +91,6 @@ class ProductsProvider with ChangeNotifier {
           'description': product.description,
           'imageUrl': product.imageUrl,
           'price': product.price,
-          'isFavorite': product.isFavorite,
         }),
       );
       final newProduct = Product(
@@ -130,7 +129,7 @@ class ProductsProvider with ChangeNotifier {
     }
   }
 
-  Future <void> deleteProduct (String productId) async {
+  Future<void> deleteProduct(String productId) async {
     final productIndex =
         _items.indexWhere((element) => element.id == productId);
 
@@ -140,14 +139,14 @@ class ProductsProvider with ChangeNotifier {
     final existingProductIndex =
         _items.indexWhere((element) => element.id == productId);
     Product? existingProduct = _items[existingProductIndex];
-      _items.removeAt(existingProductIndex);
-      notifyListeners();
+    _items.removeAt(existingProductIndex);
+    notifyListeners();
     final response = await http.delete(url);
-      if(response.statusCode > 400){
+    if (response.statusCode > 400) {
       _items.insert(existingProductIndex, existingProduct);
       notifyListeners();
-       throw HttpException("Could not delete the product!");
-      }
-      existingProduct = null;
+      throw HttpException("Could not delete the product!");
+    }
+    existingProduct = null;
   }
 }
