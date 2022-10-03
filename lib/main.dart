@@ -43,7 +43,7 @@ class MyApp extends StatelessWidget {
             secondary: Colors.deepOrange,
           ),
         ),
-        home: ProductsOverviewScreen(),
+        home: AuthScreen(),
         routes: {
           ProductDetailScreen.routeName: (context) => ProductDetailScreen(),
           CartScreen.routeName: (context) => const CartScreen(),
