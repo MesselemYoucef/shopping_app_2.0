@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class Auth with ChangeNotifier {
@@ -7,8 +8,14 @@ class Auth with ChangeNotifier {
   String? _userId;
 
   Future<void> signup(String email, String password) async {
-    var url = Uri.https(
+    final url = Uri.parse(
         "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyCH4Z2ZLDia-6ETltU-mOXECPBOCxSQv8c");
-    http.post(url);
+    final response = await http.post(url,
+        body: json.encode({
+          "email": email,
+          "password": password,
+          "returnSecureToken": true,
+        }));
+    print(json.decode(response.body));
   }
 }
