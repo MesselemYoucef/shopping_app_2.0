@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import './screens/products_overview_screen.dart';
 import './screens/product_detail_screen.dart';
 import './screens/cart_screen.dart';
 import './screens/orders_screen.dart';
@@ -34,7 +35,7 @@ class MyApp extends StatelessWidget {
           create: ((context) => Orders()),
         ),
       ],
-      child: MaterialApp(
+      child:Consumer<Auth>(builder: (ctx, auth, _)=> MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
         theme: ThemeData(
@@ -44,7 +45,7 @@ class MyApp extends StatelessWidget {
             secondary: Colors.deepOrange,
           ),
         ),
-        home: AuthScreen(),
+        home:auth.isAuth ? ProductsOverviewScreen() : AuthScreen(),
         routes: {
           ProductDetailScreen.routeName: (context) => ProductDetailScreen(),
           CartScreen.routeName: (context) => const CartScreen(),
@@ -53,6 +54,7 @@ class MyApp extends StatelessWidget {
           EditProductScreen.routeName: (context) => const EditProductScreen(),
           AuthScreen.routeName: (context) => AuthScreen()
         },
+      ),
       ),
     );
   }
