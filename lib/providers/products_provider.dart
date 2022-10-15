@@ -42,6 +42,9 @@ class ProductsProvider with ChangeNotifier {
     // ),
   ];
 
+  final String authToken;
+  ProductsProvider(this.authToken, this._items);
+
   List<Product> get favoriteItems {
     return _items.where((element) => element.isFavorite == true).toList();
   }
@@ -57,9 +60,11 @@ class ProductsProvider with ChangeNotifier {
   Future<void> fetchAndSetProducts() async {
     final url = Uri.https(
         "flutter-project-testing-8debf-default-rtdb.firebaseio.com",
-        "/products.json");
+        "/products.json", {'auth': authToken});
     try {
+      print("starting the data test");
       final response = await http.get(url);
+      print(json.decode(response.body));
       final extractedData = json.decode(response.body) as Map<String, dynamic>?;
       if (extractedData == null) {
         return;
