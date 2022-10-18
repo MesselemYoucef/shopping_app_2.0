@@ -7,6 +7,7 @@ import '../screens/product_detail_screen.dart';
 
 import '../providers/product.dart';
 import '../providers/cart.dart';
+import '../providers/auth.dart';
 
 class ProductItem extends StatelessWidget {
   const ProductItem();
@@ -15,6 +16,7 @@ class ProductItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final product = Provider.of<Product>(context, listen: false);
     final cart = Provider.of<Cart>(context, listen: false);
+    final authData = Provider.of<Auth>(context, listen: false);
     return GridTile(
       footer: ClipRRect(
         borderRadius: BorderRadius.circular(10),
@@ -26,7 +28,7 @@ class ProductItem extends StatelessWidget {
                   : Colors.white,
               icon: const Icon(Icons.favorite),
               onPressed: () async {
-                await product.toggleFavoriteStatue();
+                await product.toggleFavoriteStatue(authData.token!);
               },
             ),
           ),

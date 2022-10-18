@@ -87,10 +87,12 @@ class ProductsProvider with ChangeNotifier {
     }
   }
 
+
+  //Add product
   Future<void> addProduct(Product product) async {
     final url = Uri.https(
         'flutter-project-testing-8debf-default-rtdb.firebaseio.com',
-        'products.json');
+        'products.json', {'auth': authToken});
     try {
       final response = await http.post(
         url,
@@ -115,13 +117,15 @@ class ProductsProvider with ChangeNotifier {
     }
   }
 
+
+  //Update product
   Future<void> updateProduct(String productId, Product newProduct) async {
     final productIndex =
         _items.indexWhere((element) => element.id == productId);
     if (productIndex >= 0) {
       final url = Uri.https(
           'flutter-project-testing-8debf-default-rtdb.firebaseio.com',
-          'products/$productId.json');
+          'products/$productId.json', {'auth': authToken});
 
       await http.patch(url,
           body: json.encode({
@@ -137,13 +141,15 @@ class ProductsProvider with ChangeNotifier {
     }
   }
 
+
+  //Delete Product
   Future<void> deleteProduct(String productId) async {
     final productIndex =
         _items.indexWhere((element) => element.id == productId);
 
     final url = Uri.https(
         'flutter-project-testing-8debf-default-rtdb.firebaseio.com',
-        'products/$productId.json');
+        'products/$productId.json', {'auth': authToken});
     final existingProductIndex =
         _items.indexWhere((element) => element.id == productId);
     Product? existingProduct = _items[existingProductIndex];
