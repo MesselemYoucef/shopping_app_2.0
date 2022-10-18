@@ -60,7 +60,8 @@ class ProductsProvider with ChangeNotifier {
   Future<void> fetchAndSetProducts() async {
     final url = Uri.https(
         "flutter-project-testing-8debf-default-rtdb.firebaseio.com",
-        "/products.json", {'auth': authToken});
+        "/products.json",
+        {'auth': authToken});
     try {
       print("starting the data test");
       final response = await http.get(url);
@@ -69,6 +70,7 @@ class ProductsProvider with ChangeNotifier {
       if (extractedData == null) {
         return;
       }
+      print("The extracted data is: $extractedData");
       final List<Product> loadedProducts = [];
       extractedData.forEach((prodId, prodData) {
         loadedProducts.add(Product(
@@ -87,12 +89,12 @@ class ProductsProvider with ChangeNotifier {
     }
   }
 
-
   //Add product
   Future<void> addProduct(Product product) async {
     final url = Uri.https(
         'flutter-project-testing-8debf-default-rtdb.firebaseio.com',
-        'products.json', {'auth': authToken});
+        'products.json',
+        {'auth': authToken});
     try {
       final response = await http.post(
         url,
@@ -101,6 +103,7 @@ class ProductsProvider with ChangeNotifier {
           'description': product.description,
           'imageUrl': product.imageUrl,
           'price': product.price,
+          'isFavorite': false
         }),
       );
       final newProduct = Product(
@@ -117,7 +120,6 @@ class ProductsProvider with ChangeNotifier {
     }
   }
 
-
   //Update product
   Future<void> updateProduct(String productId, Product newProduct) async {
     final productIndex =
@@ -125,7 +127,8 @@ class ProductsProvider with ChangeNotifier {
     if (productIndex >= 0) {
       final url = Uri.https(
           'flutter-project-testing-8debf-default-rtdb.firebaseio.com',
-          'products/$productId.json', {'auth': authToken});
+          'products/$productId.json',
+          {'auth': authToken});
 
       await http.patch(url,
           body: json.encode({
@@ -141,7 +144,6 @@ class ProductsProvider with ChangeNotifier {
     }
   }
 
-
   //Delete Product
   Future<void> deleteProduct(String productId) async {
     final productIndex =
@@ -149,7 +151,8 @@ class ProductsProvider with ChangeNotifier {
 
     final url = Uri.https(
         'flutter-project-testing-8debf-default-rtdb.firebaseio.com',
-        'products/$productId.json', {'auth': authToken});
+        'products/$productId.json',
+        {'auth': authToken});
     final existingProductIndex =
         _items.indexWhere((element) => element.id == productId);
     Product? existingProduct = _items[existingProductIndex];
