@@ -69,14 +69,13 @@ class ProductsProvider with ChangeNotifier {
       if (extractedData == null) {
         return;
       }
-       url = Uri.https(
-        "flutter-project-testing-8debf-default-rtdb.firebaseio.com",
-        "/userFavorites/$userId.json",
-        {'auth': authToken});
+      url = Uri.https(
+          "flutter-project-testing-8debf-default-rtdb.firebaseio.com",
+          "/userFavorites/$userId.json",
+          {'auth': authToken});
 
-     final favoriteResponse = await http.get(url);
-     final favoriteData = json.decode(favoriteResponse.body);
-
+      final favoriteResponse = await http.get(url);
+      final favoriteData = json.decode(favoriteResponse.body);
 
       final List<Product> loadedProducts = [];
       extractedData.forEach((prodId, prodData) {
@@ -86,7 +85,11 @@ class ProductsProvider with ChangeNotifier {
           price: prodData['price'],
           imageUrl: prodData['imageUrl'],
           description: prodData['description'],
-          isFavorite: favoriteData == null? false : favoriteData[prodId] ?? false,
+          isFavorite: favoriteData == null
+              ? false
+              : favoriteData[prodId] == null
+                  ? false
+                  : favoriteData[prodId]['isFavorite'],
         ));
       });
       _items = loadedProducts;
