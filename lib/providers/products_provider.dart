@@ -43,7 +43,8 @@ class ProductsProvider with ChangeNotifier {
   ];
 
   final String authToken;
-  ProductsProvider(this.authToken, this._items);
+  final String userId;
+  ProductsProvider(this.authToken, this._items, this.userId);
 
   List<Product> get favoriteItems {
     return _items.where((element) => element.isFavorite == true).toList();
@@ -58,19 +59,25 @@ class ProductsProvider with ChangeNotifier {
   }
 
   Future<void> fetchAndSetProducts() async {
-    final url = Uri.https(
+    var url = Uri.https(
         "flutter-project-testing-8debf-default-rtdb.firebaseio.com",
         "/products.json",
         {'auth': authToken});
     try {
-      print("starting the data test");
       final response = await http.get(url);
-      print(json.decode(response.body));
       final extractedData = json.decode(response.body) as Map<String, dynamic>?;
       if (extractedData == null) {
         return;
       }
-      print("The extracted data is: $extractedData");
+       url = Uri.https(
+        "flutter-project-testing-8debf-default-rtdb.firebaseio.com",
+        "/userFavorites/$userId.json",
+        {'auth': authToken});
+
+     final favoriteResponse = await http.get(url);
+     final favoriteData = json.decode(favoriteResponse.body);
+
+
       final List<Product> loadedProducts = [];
       extractedData.forEach((prodId, prodData) {
         loadedProducts.add(Product(
@@ -79,7 +86,7 @@ class ProductsProvider with ChangeNotifier {
           price: prodData['price'],
           imageUrl: prodData['imageUrl'],
           description: prodData['description'],
-          isFavorite: prodData['isFavorite'],
+          isFavorite: favoriteData == null? false : favoriteData[prodId] ?? false,
         ));
       });
       _items = loadedProducts;
@@ -103,7 +110,6 @@ class ProductsProvider with ChangeNotifier {
           'description': product.description,
           'imageUrl': product.imageUrl,
           'price': product.price,
-          'isFavorite': false
         }),
       );
       final newProduct = Product(
