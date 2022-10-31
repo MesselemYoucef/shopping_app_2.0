@@ -58,11 +58,24 @@ class ProductsProvider with ChangeNotifier {
     return _items.firstWhere((element) => element.id == id);
   }
 
-  Future<void> fetchAndSetProducts() async {
-    var url = Uri.https(
-        "flutter-project-testing-8debf-default-rtdb.firebaseio.com",
-        "/products.json",
-        {'auth': authToken});
+  Future<void> fetchAndSetProducts([bool filterByUser = false]) async {
+    dynamic url;
+    if (filterByUser) {
+      url = Uri.https(
+          "flutter-project-testing-8debf-default-rtdb.firebaseio.com",
+          "/products.json", {
+        'auth': authToken,
+        "orderBy": json.encode("createdBy"),
+        "equalTo": json.encode(userId),
+      });
+    } else {
+      url = Uri.https(
+          "flutter-project-testing-8debf-default-rtdb.firebaseio.com",
+          "/products.json", {
+        'auth': authToken,
+      });
+    }
+
     try {
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>?;
@@ -113,6 +126,7 @@ class ProductsProvider with ChangeNotifier {
           'description': product.description,
           'imageUrl': product.imageUrl,
           'price': product.price,
+          'createdBy': userId,
         }),
       );
       final newProduct = Product(
