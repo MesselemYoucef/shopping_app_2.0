@@ -59,22 +59,24 @@ class ProductsProvider with ChangeNotifier {
   }
 
   Future<void> fetchAndSetProducts([bool filterByUser = false]) async {
-    dynamic url;
+    var _params;
     if (filterByUser) {
-      url = Uri.https(
-          "flutter-project-testing-8debf-default-rtdb.firebaseio.com",
-          "/products.json", {
+      _params = <String, String>{
         'auth': authToken,
         "orderBy": json.encode("createdBy"),
         "equalTo": json.encode(userId),
-      });
-    } else {
-      url = Uri.https(
-          "flutter-project-testing-8debf-default-rtdb.firebaseio.com",
-          "/products.json", {
-        'auth': authToken,
-      });
+      };
     }
+    if (filterByUser == false) {
+      _params = <String, String>{
+        'auth': authToken,
+      };
+    }
+
+    var url = Uri.https(
+        "flutter-project-testing-8debf-default-rtdb.firebaseio.com",
+        "/products.json",
+        _params);
 
     try {
       final response = await http.get(url);
