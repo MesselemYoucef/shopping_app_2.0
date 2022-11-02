@@ -29,40 +29,47 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => Auth()),
         ChangeNotifierProxyProvider<Auth, ProductsProvider>(
           create: (_) => ProductsProvider('', [], ""),
-          update: (ctx, auth, previousProductsProvider)=> ProductsProvider(
+          update: (ctx, auth, previousProductsProvider) => ProductsProvider(
             auth.token!,
-            previousProductsProvider == null ? [] : previousProductsProvider.items,
+            previousProductsProvider == null
+                ? []
+                : previousProductsProvider.items,
             auth.userID!,
-            ),
           ),
+        ),
         ChangeNotifierProvider(
           create: (context) => Cart(),
         ),
         ChangeNotifierProxyProvider<Auth, Orders>(
-          create: (context) => Orders('', []),
-          update: (context, auth, previousOrders) => Orders(auth.token!, previousOrders == null ? [] : previousOrders.orders),
+          create: (context) => Orders('', [], ''),
+          update: (context, auth, previousOrders) => Orders(
+              auth.token!,
+              previousOrders == null ? [] : previousOrders.orders,
+              auth.userID!),
         ),
       ],
-      child:Consumer<Auth>(builder: (ctx, auth, _)=> MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Flutter Demo',
-        theme: ThemeData(
-          fontFamily: 'Lato',
-          colorScheme:
-              ColorScheme.fromSwatch(primarySwatch: Colors.purple).copyWith(
-            secondary: Colors.deepOrange,
+      child: Consumer<Auth>(
+        builder: (ctx, auth, _) => MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'Flutter Demo',
+          theme: ThemeData(
+            fontFamily: 'Lato',
+            colorScheme:
+                ColorScheme.fromSwatch(primarySwatch: Colors.purple).copyWith(
+              secondary: Colors.deepOrange,
+            ),
           ),
+          home: auth.isAuth ? ProductsOverviewScreen() : AuthScreen(),
+          routes: {
+            ProductDetailScreen.routeName: (context) => ProductDetailScreen(),
+            CartScreen.routeName: (context) => const CartScreen(),
+            OrdersScreen.routeName: (context) => const OrdersScreen(),
+            UserProductsScreen.routeName: (context) =>
+                const UserProductsScreen(),
+            EditProductScreen.routeName: (context) => const EditProductScreen(),
+            AuthScreen.routeName: (context) => AuthScreen()
+          },
         ),
-        home:auth.isAuth ? ProductsOverviewScreen() : AuthScreen(),
-        routes: {
-          ProductDetailScreen.routeName: (context) => ProductDetailScreen(),
-          CartScreen.routeName: (context) => const CartScreen(),
-          OrdersScreen.routeName: (context) => const OrdersScreen(),
-          UserProductsScreen.routeName: (context) => const UserProductsScreen(),
-          EditProductScreen.routeName: (context) => const EditProductScreen(),
-          AuthScreen.routeName: (context) => AuthScreen()
-        },
-      ),
       ),
     );
   }

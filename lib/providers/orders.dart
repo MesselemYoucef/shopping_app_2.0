@@ -23,8 +23,9 @@ class OrderItem {
 class Orders with ChangeNotifier {
   List<OrderItem> _orders = [];
   final String authToken;
+  final String userId;
 
-  Orders(this.authToken, this._orders);
+  Orders(this.authToken, this._orders, this.userId);
 
   List<OrderItem> get orders {
     return [..._orders];
@@ -75,6 +76,7 @@ class Orders with ChangeNotifier {
                 'price': cp.price
               };
             }).toList(),
+            'createdBy': userId
           }));
       _orders.insert(
           0,
