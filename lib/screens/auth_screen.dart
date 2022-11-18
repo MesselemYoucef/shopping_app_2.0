@@ -112,19 +112,18 @@ class _AuthCardState extends State<AuthCard>
   @override
   void initState() {
     // TODO: implement initState
-   
+    super.initState();
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 300),
     );
     _heightAnimation = Tween<Size>(
-            begin: const Size(double.infinity, 260),
-            end: const Size(double.infinity, 320))
-        .animate(
+      begin: const Size(double.infinity, 260),
+      end: const Size(double.infinity, 320),
+    ).animate(
       CurvedAnimation(parent: _controller!, curve: Curves.linear),
     );
-    _heightAnimation!.addListener(() {});
-     super.initState();
+    _heightAnimation!.addListener(() => setState(() {}));
   }
 
   void _showErrorDialog(String message) {
@@ -187,14 +186,30 @@ class _AuthCardState extends State<AuthCard>
   }
 
   void _switchAuthMode() {
+    // if (_authMode == AuthMode.Login) {
+    //   _controller!.forward().whenComplete(() => setState(() {
+    //         _authMode = AuthMode.Signup;
+    //       }));
+    // } else {
+    //   _controller!.reverse();
+    //   setState(() {
+    //     _controller!.reverse().whenComplete(() => setState(() {
+    //           _authMode = AuthMode.Login;
+    //         }));
+    //   });
+
+    // }
+
     if (_authMode == AuthMode.Login) {
-      _controller!.forward().whenComplete(() => setState(() {
+      setState(() {
         _authMode = AuthMode.Signup;
-      },));
+      });
+      _controller!.forward();
     } else {
-      _controller!.reverse().whenComplete(() => setState((){
+      setState(() {
         _authMode = AuthMode.Login;
-      }));
+      });
+      _controller!.reverse();
     }
   }
 
@@ -264,8 +279,6 @@ class _AuthCardState extends State<AuthCard>
                   const CircularProgressIndicator()
                 else
                   ElevatedButton(
-                    child:
-                        Text(_authMode == AuthMode.Login ? 'LOGIN' : 'SIGN UP'),
                     onPressed: _submit,
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
@@ -275,26 +288,18 @@ class _AuthCardState extends State<AuthCard>
                       backgroundColor: Theme.of(context).primaryColor,
                       foregroundColor: Colors.white,
                     ),
-                    // shape: RoundedRectangleBorder(
-                    //   borderRadius: BorderRadius.circular(30),
-                    // ),
-                    // padding:
-                    //     EdgeInsets.symmetric(horizontal: 30.0, vertical: 8.0),
-                    // color: Theme.of(context).primaryColor,
-                    // textColor: Theme.of(context).primaryTextTheme.button.color,
+                    child:
+                        Text(_authMode == AuthMode.Login ? 'LOGIN' : 'SIGN UP'),
                   ),
                 TextButton(
-                  child: Text(
-                      '${_authMode == AuthMode.Login ? 'SIGNUP' : 'LOGIN'} INSTEAD'),
                   onPressed: _switchAuthMode,
                   style: TextButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 30.0, vertical: 4),
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       foregroundColor: Theme.of(context).primaryColor),
-                  // padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 4),
-                  // materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  // textColor: Theme.of(context).primaryColor,
+                  child: Text(
+                      '${_authMode == AuthMode.Login ? 'SIGNUP' : 'LOGIN'} INSTEAD'),
                 ),
               ],
             ),
